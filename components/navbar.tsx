@@ -2,7 +2,6 @@ import Link from "next/link";
 import ThemeButton from "./theme-button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import EyeCatchingButton_v1 from "./ui/interactive-hover-button";
-import { currentUser } from '@clerk/nextjs/server';
 import checkUser from "../app/action/checkuser"
 const Navbar=async()=>{
     const loggedInuser=await checkUser();
