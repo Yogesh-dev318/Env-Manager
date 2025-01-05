@@ -13,7 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id    Int     @id @default(autoincrement())
+  id String @id @unique @default(uuid())
   email String  @unique
   name  String?
+  projects project[]
+}
+model project{
+  id String @id @unique @default(uuid())
+  name String
+  description String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  envs env[]
+}
+model env{
+  id String @id @unique @default(uuid())
+  variiable String
+  projectId String
+  project project @relation(fields: [projectId],references: [id],onDelete: Cascade)
 }

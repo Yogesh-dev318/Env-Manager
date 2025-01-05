@@ -26,7 +26,6 @@ export default function Home() {
   ];
   return (
     <div>
-      <Navbar/>
       <BackgroundBeams
        className="hidden md:block"/>
       <SparklesCore
