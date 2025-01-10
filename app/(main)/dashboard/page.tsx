@@ -21,9 +21,9 @@ import addproject, { getprojects } from "../../action/addproject"
 import Link from "next/link";
 type Project = {
   id: string;
-  
   name: string;
-  env?: string; // Made optional since it might not come from API
+  env?: string;
+  des?:string; // Made optional since it might not come from API
 }
 
 export default function Dashboard() {
