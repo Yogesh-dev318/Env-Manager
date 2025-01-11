@@ -256,9 +256,12 @@ export default function Dashboard() {
                       {project.env || "No"} Environment(s)
                     </p>
                   </div>
+                  <Link href={`/env/${project.id}`}>
                   <EyeCatchingButton_v1 className="min-w-[100px] pointer">
                     View
                   </EyeCatchingButton_v1>
+                  </Link>
+                  
                 </div>
               </div>
             ))}
