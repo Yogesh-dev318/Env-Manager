@@ -182,11 +182,9 @@ export default function Dashboard() {
                   </Button>
                 </DialogClose>
                 <DialogClose asChild>
-                  <Link href={"/dashboard"}>
                   <Button type="button" onClick={handleAddProject}>
                     Add Project
                   </Button>
-                  </Link>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
