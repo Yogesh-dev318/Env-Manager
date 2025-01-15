@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy, Download, Plus, Trash2 } from "lucide-react";
-
+import { addenv,noofenv } from '@/app/action/addenv'; 
 interface EnvVariable {
   id: string;
   variiable: string;
@@ -36,18 +36,18 @@ const dummyData: EnvVariable[] = [
 
 export default function EnvManager() {
   const params = useParams();
+  const projectid=params?.id?.[0];
+  console.log(projectid)
   const [variables, setVariables] = useState<EnvVariable[]>(dummyData);
   const [newVariable, setNewVariable] = useState<string>('');
 
-  const handleAddVariable = async (): Promise<void> => {
-    if (!newVariable.trim()) return;
-    const newEnvVariable: EnvVariable = {
-      id: Math.random().toString(),
-      variiable: newVariable,
-      projectId: params.id as string
-    };
-    setVariables([...variables, newEnvVariable]);
-    setNewVariable('');
+  const handleAddVariable = async () => {
+    if (!projectid) return;
+    const env = await addenv(projectid, newVariable);
+    console.log(env)
+    setNewVariable("")
+    const en=await noofenv(projectid);
+    console.log(en)
   };
 
   const handleRemoveVariable = async (id: string): Promise<void> => {
