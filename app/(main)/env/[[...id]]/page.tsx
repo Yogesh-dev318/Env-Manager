@@ -85,7 +85,7 @@ export default function EnvManager() {
         const response = await getenv(projectid);
         
         if (Array.isArray(response)) {
-          setVariables(response)
+          setVariables(response);
         } 
       } catch (err) {
         console.error("Error fetching projects:", err);
@@ -95,7 +95,7 @@ export default function EnvManager() {
     };
 
     fetchProjects();
-  }, []);
+  }, [projectid]);
   if(isLoading){
     return(
       <div>
