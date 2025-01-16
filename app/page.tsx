@@ -1,4 +1,3 @@
-import Navbar from "@/components/navbar";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import EyeCatchingButton_v1 from "@/components/ui/interactive-hover-button";
 import { SparklesCore } from "@/components/ui/sparkles";
