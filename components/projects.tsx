@@ -39,7 +39,7 @@ const ProjectGrid: React.FC<ProjectsProps> = ({ projects }) => {
                       {project.name}
                     </h3>
                     <p className="flex text-slate-600 dark:text-slate-300">
-                      {envCounts[project.id] || "No"}Variables
+                      {envCounts[project.id] || "No"} Variables
                     </p>
                   </div>
                   <Link href={`/env/${project.id}`}>

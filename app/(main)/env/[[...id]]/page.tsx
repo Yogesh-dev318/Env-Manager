@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SparklesText from "@/components/ui/sparkles-text";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
@@ -8,46 +8,29 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy, Download, Plus, Trash2 } from "lucide-react";
-import { addenv,noofenv } from '@/app/action/addenv'; 
+import { addenv,getenv} from '@/app/action/addenv'; 
+import { Spinner } from '@/components/ui/spinner';
 interface EnvVariable {
   id: string;
   variiable: string;
   projectId: string;
 }
-
-// Dummy data to simulate database records
-const dummyData: EnvVariable[] = [
-  {
-    id: '1',
-    variiable: 'DATABASE_URL=postgresql://user:password@localhost:5432/mydb',
-    projectId: 'project1'
-  },
-  {
-    id: '2',
-    variiable: 'API_KEY=your-secret-key-123',
-    projectId: 'project1'
-  },
-  {
-    id: '3',
-    variiable: 'PORT=3000',
-    projectId: 'project1'
-  }
-];
-
 export default function EnvManager() {
   const params = useParams();
   const projectid=params?.id?.[0];
   console.log(projectid)
-  const [variables, setVariables] = useState<EnvVariable[]>(dummyData);
+  const [variables, setVariables] = useState<EnvVariable[]>([]);
   const [newVariable, setNewVariable] = useState<string>('');
-
+  const [isLoading, setIsLoading] = useState(true);
   const handleAddVariable = async () => {
     if (!projectid) return;
     const env = await addenv(projectid, newVariable);
     console.log(env)
     setNewVariable("")
-    const en=await noofenv(projectid);
-    console.log(en)
+    const response = await getenv(projectid);
+    if (Array.isArray(response)) {
+      setVariables(response)
+    } 
   };
 
   const handleRemoveVariable = async (id: string): Promise<void> => {
@@ -67,7 +50,7 @@ export default function EnvManager() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `env-variable-${index + 1}.env`;
+    a.download = `env-variable-${index + 1}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -86,7 +69,64 @@ export default function EnvManager() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setIsLoading(true);
+        if (!projectid) return;
+        const response = await getenv(projectid);
+        
+        if (Array.isArray(response)) {
+          setVariables(response)
+        } 
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    fetchProjects();
+  }, []);
+  if(isLoading){
+    return(
+      <div>
+        <ShootingStars />
+        <StarsBackground />
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          <header className="flex flex-col sm:flex-row justify-between items-center mb-16 gap-8">
+            <div className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-white">
+              <SparklesText text="Env-Variables" />
+            </div>
+            <Button 
+              onClick={handleDownloadAll}
+              className="w-full rounded-full sm:w-auto"
+            >
+              <Download className="h-4 w-4 mr-2" /> Download All Variables
+            </Button>
+          </header>
+          <Card className="p-8 mb-12">
+          <div className="flex flex-col md:flex-row gap-6 mb-10">
+            <Input
+              placeholder="Add new environment variable (KEY=value)"
+              value={newVariable}
+              onChange={(e) => setNewVariable(e.target.value)}
+              className=""
+            />
+            <Button 
+              onClick={handleAddVariable}
+              className="md:w-auto rounded-full"
+            >
+              <Plus className="h-4 w-4 mr-2" /> Add Variable
+            </Button>
+          </div>
+          <Spinner>Loading...</Spinner>
+          </Card>
+        </div>
+        
+      </div>
+    )
+  }
   return (
     <div >
       <ShootingStars />

@@ -43,3 +43,26 @@ export const noofenv=async(projectid:string)=>{
     }
 }
 }
+export const getenv=async(projid:string)=>{
+    try{
+        console.log("getenvs")
+        const env=await prisma.env.findMany({
+            where:{
+                projectId:projid
+            },select:{
+                id:true,
+                variiable:true,
+                projectId:true
+            }
+        })
+        console.log(env)
+        return env;
+    }
+    catch(error){
+        console.error('Failed to get ENVS:', error)
+        return {
+        success: false,
+        error: 'Failed to get ENVS. Please try again.'
+    }
+}
+}
