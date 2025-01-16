@@ -6,7 +6,7 @@ import EyeCatchingButton_v1 from "@/components/ui/interactive-hover-button";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import SparklesText from "@/components/ui/sparkles-text";
 import { StarsBackground } from "@/components/ui/stars-background";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,17 +19,29 @@ import {
 import { Input } from "@/components/ui/input";
 import addproject, { getprojects } from "../../action/addproject"
 import Link from "next/link";
-import ProjectGrid from "@/components/projects"
+import { noofenv } from "@/app/action/addenv";
+import { deleteproject } from "@/app/action/deleteproject";
+import { Spinner } from "@/components/ui/spinner";
 type Project = {
   id: string;
   name: string;
-  env?: string; // Made optional since it might not come from API
+  env?: string;
+}
+interface ProjectType {
+  id: string;
+  name: string;
+  env?: string;
+}
+
+interface ProjectsProps {
+  projects: ProjectType[];
 }
 
 export default function Dashboard() {
   const [projectName, setProjectName] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [envCounts, setEnvCounts] = useState<{[key: string]: number}>({});
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -48,8 +60,29 @@ export default function Dashboard() {
 
     fetchProjects();
   }, []);
-  
-
+  useEffect(() => {
+    try{
+      projects.forEach(async (project) => {
+        const count = await noofenv(project.id);
+        setEnvCounts(prev => ({
+            ...prev,
+            [project.id]: typeof count === 'number' ? count : 0
+        }));
+    });
+    }catch(e){
+      console.error("Error in fetching no of envs projects:", e);
+    }
+    
+}, [projects]);
+  const handledeleteproject=async(projectid:string)=>{
+    const del=await deleteproject(projectid);
+    console.log(del);
+    const response = await getprojects();
+        
+    if (Array.isArray(response)) {
+      setProjects(response)
+    } 
+  }
   const handleAddProject = async() => {
     // Handle adding new project here
     console.log("Adding project:", projectName);
@@ -113,29 +146,9 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
         </header>
-        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 relative z-10" >
-            <div className="flex items-center space-x-4">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-                <Skeleton className="h-4 w-[200px]" />
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-                <Skeleton className="h-4 w-[200px]" />
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-                <Skeleton className="h-4 w-[200px]" />
-              </div>
-            </div>
-        </div>
+        
+        <Spinner>Loading...</Spinner>
+        
       </div>
     </div>
     )
@@ -240,7 +253,35 @@ export default function Dashboard() {
           </Dialog>
           </div>
         ) : (
-          <ProjectGrid projects={projects}/>
+          <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 relative z-10">
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                className="relative z-10 bg-white/70 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl p-6 transition-all duration-300 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-500">
+                      {project.name}
+                    </h3>
+                    <p className="flex text-slate-600 dark:text-slate-300">
+                      {envCounts[project.id] || "No"} Variables
+                    </p>
+                  </div>
+                  <div className="flex space-x-5 ">
+                    <Button variant="destructive" className="rounded-full mt-1" onClick={()=>handledeleteproject(project.id)}><Trash2 className="h-4 w-4" /></Button>
+                  <Link href={`/env/${project.id}`}>
+                  <EyeCatchingButton_v1 className="min-w-[100px] pointer">
+                    View
+                  </EyeCatchingButton_v1>
+                  </Link>
+                  </div>
+                  
+                  
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
