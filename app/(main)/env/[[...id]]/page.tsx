@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy, Download, Plus, Trash2 } from "lucide-react";
-import { addenv,getenv} from '@/app/action/addenv'; 
+import { addenv,getenv,delenv} from '@/app/action/addenv'; 
 import { Spinner } from '@/components/ui/spinner';
 interface EnvVariable {
   id: string;
@@ -34,7 +34,15 @@ export default function EnvManager() {
   };
 
   const handleRemoveVariable = async (id: string): Promise<void> => {
-    setVariables(variables.filter(v => v.id !== id));
+    const del=await delenv(id);
+    console.log("deleted");
+    console.log(del)
+    if (!projectid) return;
+    const response = await getenv(projectid);
+    if (Array.isArray(response)) {
+      setVariables(response)
+    } 
+
   };
 
   const handleCopyVariable = async (variable: string): Promise<void> => {

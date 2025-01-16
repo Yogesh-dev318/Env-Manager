@@ -66,3 +66,20 @@ export const getenv=async(projid:string)=>{
     }
 }
 }
+export const delenv=async(envid:string)=>{
+    try{
+        const del=await prisma.env.delete({
+            where:{
+                id:envid
+            }
+        })
+        console.log(del);
+        
+    }
+    catch(error){
+        console.error('Failed to delete ENV:', error)
+        return {
+        success: false,
+        error: 'Failed to delete ENV. Please try again.'
+    }
+}}
