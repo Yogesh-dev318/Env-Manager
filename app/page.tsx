@@ -41,7 +41,7 @@ export default function Home() {
           <div className="font-bold text-center">
           <TypewriterEffectSmooth words={words}/>
           </div>
-          <p className="text-center text-xs md:text-xl lg:text-xl ">Save Your Project's Environment Variables here. It is a secure and <br/> efficient solution 
+          <p className="text-center text-xs md:text-xl lg:text-xl ">Save Your Project&apos;s Environment Variables here. It is a secure and <br/> efficient solution 
             for managing and storing environment variables.</p>
           <div className="flex flex-row mt-5">
             <Link href={"/dashboard"} className="m-5"><EyeCatchingButton_v1>View Dashboard</EyeCatchingButton_v1></Link>

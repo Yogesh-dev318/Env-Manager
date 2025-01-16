@@ -26,8 +26,11 @@ const checkUser=async()=>{
           return newUser;
     }
     catch(error){
-        return { message: 'Database Error: Failed to register user in checkuser' };
+        console.error('Database Error: Failed to register user in checkuser', error)
+        return {
+        success: false,
+        error: 'Database Error: Failed to register user in checkuser'
     }
-    
+}
 }
 export default checkUser;

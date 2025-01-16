@@ -1,7 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {Skeleton} from "@/components/ui/skeleton"
 import EyeCatchingButton_v1 from "@/components/ui/interactive-hover-button";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import SparklesText from "@/components/ui/sparkles-text";
