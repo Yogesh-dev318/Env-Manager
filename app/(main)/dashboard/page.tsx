@@ -26,53 +26,54 @@ type Project = {
   name: string;
   env?: string;
 }
-interface ProjectType {
-  id: string;
-  name: string;
-  env?: string;
-}
-
-interface ProjectsProps {
-  projects: ProjectType[];
-}
-
 export default function Dashboard() {
   const [projectName, setProjectName] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [envCounts, setEnvCounts] = useState<{[key: string]: number}>({});
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
         const response = await getprojects();
         
-        if (Array.isArray(response)) {
-          setProjects(response)
-        } 
+        if (!Array.isArray(response)) {
+          return;
+        }
+        
+        setProjects(response);
+        
+        // Only proceed with env counts if we have projects
+        if (response.length > 0) {
+          const countPromises = response.map(async (project) => {
+            try {
+              const count = await noofenv(project.id);
+              return { id: project.id, count: typeof count === 'number' ? count : 0 };
+            } catch (err) {
+              console.error(`Error fetching env count for project ${project.id}:`, err);
+              return { id: project.id, count: 0 };
+            }
+          });
+  
+          const results = await Promise.all(countPromises);
+          console.log(results)
+          const newCounts = results.reduce((acc, { id, count }) => ({
+            ...acc,
+            [id]: count
+          }),{});
+          console.log(newCounts)
+  
+          setEnvCounts(newCounts);
+        }
       } catch (err) {
-        console.error("Error fetching projects:", err);
+        console.error("Error fetching data:", err);
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchProjects();
-  }, []);
-  useEffect(() => {
-    try{
-      projects.forEach(async (project) => {
-        const count = await noofenv(project.id);
-        setEnvCounts(prev => ({
-            ...prev,
-            [project.id]: typeof count === 'number' ? count : 0
-        }));
-    });
-    }catch(e){
-      console.error("Error in fetching no of envs projects:", e);
-    }
-    
-}, [projects]);
+  
+    fetchData();
+  }, []); // Empty dependency array since we only want this to run once on mount
   const handledeleteproject=async(projectid:string)=>{
     const del=await deleteproject(projectid);
     console.log(del);
