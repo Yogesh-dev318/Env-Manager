@@ -26,7 +26,6 @@ export const TypewriterEffect = ({
 
   const [scope, animate] = useAnimate();
   const isInView = useInView(scope);
-
   useEffect(() => {
     if (isInView) {
       animate(
@@ -43,7 +42,7 @@ export const TypewriterEffect = ({
         }
       );
     }
-  }, [isInView, animate]); // Added animate to dependency array
+  }, [isInView]);
 
   const renderWords = () => {
     return (
@@ -70,7 +69,6 @@ export const TypewriterEffect = ({
       </motion.div>
     );
   };
-
   return (
     <div
       className={cn(
@@ -119,7 +117,6 @@ export const TypewriterEffectSmooth = ({
       text: word.text.split(""),
     };
   });
-
   const renderWords = () => {
     return (
       <div>
@@ -159,9 +156,10 @@ export const TypewriterEffectSmooth = ({
         }}
       >
         <div
-          className="text-xl sm:text-2xl md:text-3xl lg:text-5xl xl:text-7xl font-bold"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-5xl font-bold" // Updated text size classes
           style={{
             whiteSpace: "nowrap",
+            lineHeight: 1,
           }}
         >
           {renderWords()}{" "}
@@ -176,11 +174,12 @@ export const TypewriterEffectSmooth = ({
         }}
         transition={{
           duration: 0.8,
+
           repeat: Infinity,
           repeatType: "reverse",
         }}
         className={cn(
-          "block rounded-sm w-[4px]  h-7 sm:h-10 md:h-14 xl:h-20 bg-blue-500",
+          "block rounded-sm w-[4px] h-5 sm:h-6 md:h-8 lg:h-10 xl:h-12 bg-blue-500", // Adjusted cursor height
           cursorClassName
         )}
       ></motion.span>
